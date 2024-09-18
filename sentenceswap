@@ -1,0 +1,103 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class MultiSentenceTransformer {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<String> sentences = new ArrayList<>();
+
+        // Take 5 sentences as input
+        System.out.println("Enter 5 sentences:");
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Sentence " + (i + 1) + ":");
+            String sentence = scanner.nextLine();
+            sentences.add(sentence);
+        }
+
+        // Process each sentence
+        for (String sentence : sentences) {
+            System.out.println("\nProcessing sentence:");
+            System.out.println(sentence);
+            String result = processSentence(sentence);
+            System.out.println("Transformed sentence:");
+            System.out.println(result);
+        }
+
+        scanner.close();
+    }
+
+    private static String processSentence(String sentence) {
+        // Split sentence into words
+        String[] words = sentence.split("\\s+");
+        List<String> wordList = new ArrayList<>();
+        Collections.addAll(wordList, words);
+
+        // Print word lengths
+        System.out.println("Word lengths:");
+        for (String word : wordList) {
+            System.out.println(word + ": " + word.length() + " characters");
+        }
+
+        // Process words
+        List<String> transformedWords = new ArrayList<>();
+        List<String> oddLengthWords = new ArrayList<>();
+
+        // Iterate through words
+        for (int i = 0; i < wordList.size(); i++) {
+            String word = wordList.get(i);
+
+            // Check if word length is odd
+            if (word.length() % 2 != 0) {
+                oddLengthWords.add(word);
+            }
+
+            // Swap letters with alternative words
+            if (i % 2 == 0 && i + 1 < wordList.size()) {
+                String currentWord = wordList.get(i);
+                String nextWord = wordList.get(i + 1);
+
+                // Swap letters between the current word and next word
+                String swappedWord = swapLetters(currentWord, nextWord);
+                transformedWords.add(swappedWord);
+
+                // Skip the next word as it has already been processed
+                i++;
+            } else {
+                // Add word if it's not part of a swap operation
+                if (i % 2 != 0) {
+                    transformedWords.add(wordList.get(i));
+                }
+            }
+        }
+
+        // Append odd length words to the beginning
+        transformedWords.addAll(0, oddLengthWords);
+
+        // Join words to form the final sentence
+        return String.join(" ", transformedWords);
+    }
+
+    private static String swapLetters(String word1, String word2) {
+        StringBuilder swappedWord = new StringBuilder();
+
+        // Calculate the length to swap
+        int minLength = Math.min(word1.length(), word2.length());
+
+        // Swap letters up to the length of the shorter word
+        for (int i = 0; i < minLength; i++) {
+            swappedWord.append(word2.charAt(i))
+                       .append(word1.charAt(i));
+        }
+
+        // Append the remaining letters from the longer word
+        if (word1.length() > minLength) {
+            swappedWord.append(word1.substring(minLength));
+        } else if (word2.length() > minLength) {
+            swappedWord.append(word2.substring(minLength));
+        }
+
+        return swappedWord.toString();
+    }
+}
